@@ -467,7 +467,7 @@ import Foundation
             animations: { () -> Void in
                 self.alpha = 0
         }, completion: { (_) -> Void in
-            self.onAnimationComplete()
+                self.onAnimationComplete()
         })
     }
 
