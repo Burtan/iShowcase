@@ -21,7 +21,7 @@ import Foundation
 
      - showcase: The instance of the showcase removed
      */
-    @objc optional func iShowcaseDismissed(_ showcase: iShowcase)
+    @objc optional func iShowcaseDismissed(_ showcase: iShowcase, _ programmatically: Bool)
 }
 
 @objc open class iShowcase: UIView {
@@ -64,13 +64,16 @@ import Foundation
     fileprivate var containerView: UIView!
     fileprivate var showcaseRect: CGRect!
     fileprivate var region: REGION!
-    fileprivate var targetView: UIView?
     fileprivate var showcaseImageView: UIImageView!
 
     /// Label to show the title of the showcase
     open var titleLabel: UILabel!
+    /// the view which is showcased
+    open var targetView: UIView?
     /// Label to show the description of the showcase
     open var detailsLabel: UILabel!
+    /// Button to show custom action
+    open var button: UIButton!
     /// Color of the background for the showcase. Default is black
     open var coverColor: UIColor!
     /// Alpha of the background of the showcase. Default is 0.75
@@ -100,6 +103,7 @@ import Foundation
             width: UIScreen.main.bounds.width,
             height: UIScreen.main.bounds.height))
         setup()
+        //isUserInteractionEnabled = false
     }
 
     /**
@@ -126,6 +130,7 @@ import Foundation
         addSubview(showcaseImageView)
         addSubview(titleLabel)
         addSubview(detailsLabel)
+        addSubview(button)
         addGestureRecognizer(getGestureRecgonizer())
     }
 
@@ -252,11 +257,14 @@ import Foundation
         detailsLabel.textAlignment = .center
         detailsLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
         detailsLabel.numberOfLines = 0
+        // Setup button defaults
+        button = UIButton()
     }
 
     fileprivate func draw() {
         setupBackground()
         calculateRegion()
+        setupButton()
         setupText()
     }
 
@@ -387,6 +395,20 @@ import Foundation
             height: detailsLabel.frame.size.height)
         detailsLabel.sizeToFit()
     }
+    
+    fileprivate func setupButton() {
+        button.setTitleColor(highlightColor, for: .normal)
+        button.frame = containerView.frame
+        button.sizeToFit()
+        button.frame = CGRect(
+            x: 8,
+            y: containerView.frame.height - 8 - button.frame.height,
+            width: button.frame.width,
+            height: button.frame.height
+        )
+        button.sizeToFit()
+        
+    }
 
     fileprivate func getBestPositionOfTitle(withTitleSize titleSize: CGSize,
         withDetailsSize detailsSize: CGSize) -> (CGRect, CGRect) {
@@ -420,7 +442,7 @@ import Foundation
                 case .bottom:
                     rect0 = CGRect(
                         x: containerView.bounds.size.width / 2.0 - detailsSize.width / 2.0,
-                        y: containerView.bounds.size.height - detailsSize.height * 2.0,
+                        y: button.frame.origin.y - detailsSize.height * 2.0,
                         width: detailsSize.width,
                         height: detailsSize.height)
                     rect1 = CGRect(
@@ -462,20 +484,29 @@ import Foundation
                 return
             }
         }
-        UIView.animate(
-            withDuration: 0.5,
-            animations: { () -> Void in
-                self.alpha = 0
-        }, completion: { (_) -> Void in
-                self.onAnimationComplete()
-        })
+        hide(false)
     }
 
-    fileprivate func onAnimationComplete() {
+    open override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        return super.point(inside: point, with: event)
+    }
+
+    open func hide(_ programmatically: Bool) {
+        UIView.animate(
+                withDuration: 0.5,
+                animations: {
+                    self.alpha = 0
+                },
+                completion: { _ in
+                    self.onAnimationComplete(programmatically)
+                }
+        )
+    }
+
+    fileprivate func onAnimationComplete(_ programmatically: Bool) {
         if singleShotId != -1 {
             UserDefaults.standard.set(true, forKey: String(
                 format: "iShowcase-%ld", singleShotId))
-            singleShotId = -1
         }
         for view in self.containerView.subviews {
             view.isUserInteractionEnabled = true
@@ -484,7 +515,7 @@ import Foundation
         self.removeFromSuperview()
         if let delegate = delegate {
             if delegate.responds(to: #selector(iShowcaseDelegate.iShowcaseDismissed)) {
-                delegate.iShowcaseDismissed!(self)
+                delegate.iShowcaseDismissed!(self, programmatically)
             }
         }
     }
