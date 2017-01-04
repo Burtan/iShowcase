@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina5_5" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="Jti-FU-Zec">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Lorem Ipsum" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6of-dZ-Pp3">
+                    <rect key="frame" x="93" y="240.33333333333331" width="229" height="47.999999999999943"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="40"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="253" verticalHuggingPriority="253" textAlignment="justified" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zo7-Vq-Imk">
+                    <rect key="frame" x="8" y="308.33333333333326" width="398" height="119.66666666666669"/>
+                    <constraints>
+                        <constraint firstAttribute="width" relation="lessThanOrEqual" constant="600" id="4T8-59-urr"/>
+                    </constraints>
+                    <string key="text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et</string>
+                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <constraints>
+                <constraint firstItem="Zo7-Vq-Imk" firstAttribute="top" secondItem="6of-dZ-Pp3" secondAttribute="bottom" constant="20" id="L2L-ub-o6m"/>
+                <constraint firstItem="Zo7-Vq-Imk" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Jti-FU-Zec" secondAttribute="leading" constant="8" id="MdM-r9-VoY"/>
+                <constraint firstItem="6of-dZ-Pp3" firstAttribute="centerX" secondItem="Jti-FU-Zec" secondAttribute="centerX" id="QpA-mb-Xhu"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Zo7-Vq-Imk" secondAttribute="trailing" constant="8" id="XQa-9I-m88"/>
+                <constraint firstItem="Zo7-Vq-Imk" firstAttribute="centerX" secondItem="Jti-FU-Zec" secondAttribute="centerX" id="iY4-gh-f2f"/>
+                <constraint firstItem="Zo7-Vq-Imk" firstAttribute="centerY" secondItem="Jti-FU-Zec" secondAttribute="centerY" id="jaQ-DP-dVE"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <nil key="simulatedTopBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <point key="canvasLocation" x="-175" y="1438"/>
+        </view>
+    </objects>
+</document>
