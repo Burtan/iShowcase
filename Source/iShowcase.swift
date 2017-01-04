@@ -67,6 +67,7 @@ import Foundation
     fileprivate var containerView: UIView!
     fileprivate var showcaseRect: CGRect?
     fileprivate var region = REGION.none
+    fileprivate var gestureRecognizer: UIGestureRecognizer!
     fileprivate var showcaseImageView: UIImageView!
     fileprivate var textContainer: UIView!
     
@@ -117,24 +118,6 @@ import Foundation
     }
     
     // MARK: Public
-    
-    /**
-     Position the views on the screen for display
-     */
-    open override func layoutSubviews() {
-        super.layoutSubviews()
-        if showcaseImageView != nil {
-            recycleViews()
-        }
-        if let view = targetView {
-            showcaseRect = view.convert(view.bounds, to: containerView)
-        }
-        draw()
-        addSubview(showcaseImageView)
-        addSubview(textContainer)
-        addSubview(button)
-        addGestureRecognizer(getGestureRecgonizer())
-    }
     
     /**
      Setup the showcase for a view
@@ -231,6 +214,38 @@ import Foundation
             }
         }
     }
+
+    /**
+    Position the views on the screen for display
+    */
+    open override func layoutSubviews() {
+        super.layoutSubviews()
+
+        frame = CGRect(
+                x: 0,
+                y: 0,
+                width: UIScreen.main.bounds.width,
+                height: UIScreen.main.bounds.height
+        )
+
+        if showcaseImageView != nil {
+            recycleViews()
+        }
+        if let view = targetView {
+            showcaseRect = view.convert(view.bounds, to: containerView)
+        }
+
+        updateBackground()
+        updateRegion()
+        updateTextContainer()
+        updateButton()
+        gestureRecognizer = getGestureRecgonizer()
+
+        addSubview(showcaseImageView)
+        addSubview(textContainer)
+        addSubview(button)
+        addGestureRecognizer(gestureRecognizer)
+    }
     
     // MARK: Private
     
@@ -238,7 +253,7 @@ import Foundation
         self.backgroundColor = UIColor.clear
         containerView = UIApplication.shared.delegate!.window!
         coverColor = UIColor.black
-        highlightColor = UIColor.colorFromHexString("#1397C5")
+        highlightColor = UIColor.blue
         coverAlpha = 0.75
         type = .rectangle
         radius = 25
@@ -256,14 +271,7 @@ import Foundation
 
     }
     
-    fileprivate func draw() {
-        setupBackground()
-        calculateRegion()
-        setupButton()
-        setupTextContainer()
-    }
-    
-    fileprivate func setupBackground() {
+    fileprivate func updateBackground() {
         UIGraphicsBeginImageContextWithOptions(UIScreen.main.bounds.size,
                                                false, UIScreen.main.scale)
         var context: CGContext? = UIGraphicsGetCurrentContext()
@@ -329,7 +337,7 @@ import Foundation
         UIGraphicsEndImageContext()
     }
     
-    fileprivate func calculateRegion() {
+    fileprivate func updateRegion() {
         if let showcaseRect = showcaseRect {
             let left = showcaseRect.origin.x,
             right = showcaseRect.origin.x + showcaseRect.size.width,
@@ -355,7 +363,7 @@ import Foundation
         }
     }
     
-    fileprivate func setupTextContainer() {
+    fileprivate func updateTextContainer() {
 
         switch region {
         case .top:
@@ -399,7 +407,7 @@ import Foundation
         }
     }
     
-    fileprivate func setupButton() {
+    fileprivate func updateButton() {
         button.setTitleColor(highlightColor, for: .normal)
         button.frame = containerView.frame
         button.sizeToFit()
@@ -431,19 +439,14 @@ import Foundation
         hide(false)
     }
     
-    open override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        return super.point(inside: point, with: event)
-    }
-    
     open func hide(_ programmatically: Bool) {
         UIView.animate(
             withDuration: 0.5,
             animations: {
                 self.alpha = 0
-        },
-            completion: { _ in
+            }, completion: { _ in
                 self.onAnimationComplete(programmatically)
-        }
+            }
         )
     }
     
@@ -468,40 +471,7 @@ import Foundation
         showcaseImageView.removeFromSuperview()
         textContainer.removeFromSuperview()
         button.removeFromSuperview()
+        removeGestureRecognizer(gestureRecognizer)
     }
     
-}
-
-// MARK: UIColor extension
-
-public extension UIColor {
-    
-    /**
-     Parse a hex string for its `ARGB` components and return a `UIColor` instance
-     
-     - parameter colorString: A string representing the color hex to be parsed
-     - returns: A UIColor instance containing the parsed color
-     */
-    public static func colorFromHexString(_ colorString: String) -> UIColor {
-        let hex = colorString.trimmingCharacters(
-            in: CharacterSet.alphanumerics.inverted)
-        var int = UInt32()
-        Scanner(string: hex).scanHexInt32(&int)
-        let a, r, g, b: UInt32
-        switch hex.characters.count {
-        case 3: // RGB (12-bit)
-            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: // RGB (24-bit)
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8: // ARGB (32-bit)
-            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            return UIColor.clear
-        }
-        return UIColor(
-            red: CGFloat(r) / 255,
-            green: CGFloat(g) / 255,
-            blue: CGFloat(b) / 255,
-            alpha: CGFloat(a) / 255)
-    }
 }
