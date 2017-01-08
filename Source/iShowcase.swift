@@ -385,10 +385,9 @@ import Foundation
             textContainer.frame = CGRect(
                     x: 0,
                     y: 0,
-                    width: showcaseRect!.origin.y,
+                    width: showcaseRect!.origin.x,
                     height: containerView.frame.height
             )
-
         case .right:
             let leftBorder = showcaseRect!.origin.x + showcaseRect!.width
             textContainer.frame = CGRect(
