@@ -14,8 +14,11 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Lorem Ipsum" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6of-dZ-Pp3">
-                    <rect key="frame" x="93" y="240.33333333333331" width="229" height="47.999999999999943"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Lorem ipsum dolor sit amet" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6of-dZ-Pp3">
+                    <rect key="frame" x="13" y="192.66666666666669" width="388.33333333333331" height="95.666666666666686"/>
+                    <constraints>
+                        <constraint firstAttribute="width" relation="lessThanOrEqual" constant="600" id="4eu-Lc-gnO"/>
+                    </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="40"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
@@ -35,7 +38,9 @@
                 <constraint firstItem="Zo7-Vq-Imk" firstAttribute="top" secondItem="6of-dZ-Pp3" secondAttribute="bottom" constant="20" id="L2L-ub-o6m"/>
                 <constraint firstItem="Zo7-Vq-Imk" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Jti-FU-Zec" secondAttribute="leading" constant="8" id="MdM-r9-VoY"/>
                 <constraint firstItem="6of-dZ-Pp3" firstAttribute="centerX" secondItem="Jti-FU-Zec" secondAttribute="centerX" id="QpA-mb-Xhu"/>
+                <constraint firstItem="6of-dZ-Pp3" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Jti-FU-Zec" secondAttribute="leading" constant="8" id="Rl6-0C-sLI"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Zo7-Vq-Imk" secondAttribute="trailing" constant="8" id="XQa-9I-m88"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="6of-dZ-Pp3" secondAttribute="trailing" constant="8" id="hjP-0l-cfW"/>
                 <constraint firstItem="Zo7-Vq-Imk" firstAttribute="centerX" secondItem="Jti-FU-Zec" secondAttribute="centerX" id="iY4-gh-f2f"/>
                 <constraint firstItem="Zo7-Vq-Imk" firstAttribute="centerY" secondItem="Jti-FU-Zec" secondAttribute="centerY" id="jaQ-DP-dVE"/>
             </constraints>
