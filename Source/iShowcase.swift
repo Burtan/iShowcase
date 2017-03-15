@@ -25,9 +25,9 @@ import Foundation
 }
 
 @objc open class iShowcase: UIView {
-    
+
     // MARK: Properties
-    
+
     /**
      Type of the highlight for the showcase
      
@@ -38,14 +38,14 @@ import Foundation
         case circle = 0
         case rectangle = 1
     }
-    
+
     fileprivate enum REGION: Int {
         case top = 0
         case left = 1
         case bottom = 2
         case right = 3
         case none = 4
-        
+
         static func regionFromInt(_ region: Int) -> REGION {
             switch region {
             case 0:
@@ -63,22 +63,24 @@ import Foundation
             }
         }
     }
-    
+
     fileprivate var containerView: UIView!
     fileprivate var showcaseRect: CGRect?
     fileprivate var region = REGION.none
     fileprivate var gestureRecognizer: UIGestureRecognizer!
     fileprivate var showcaseImageView: UIImageView!
     fileprivate var textContainer: UIView!
-    
+
     /// Label to show the title of the showcase
     open var titleLabel: UILabel!
     /// the view which is showcased
     open var targetView: UIView?
     /// Label to show the description of the showcase
     open var detailsLabel: UILabel!
-    /// Button to show custom action
-    open var button: UIButton!
+    /// Button to show custom end action
+    open var endButton: UIButton!
+    /// Button to show custom noHelp action
+    open var noHelp: UIButton!
     /// Color of the background for the showcase. Default is black
     open var coverColor: UIColor!
     /// Alpha of the background of the showcase. Default is 0.75
@@ -95,65 +97,65 @@ import Foundation
     open var hideOnTouchOutside = true
     /// Delegate for handling iShowcase callbacks
     open var delegate: iShowcaseDelegate?
-    
+
     // MARK: Initialize
-    
+
     /**
      Initialize an instance of iShowcae
      */
     public init() {
         super.init(frame: CGRect(
-            x: 0,
-            y: 0,
-            width: UIScreen.main.bounds.width,
-            height: UIScreen.main.bounds.height))
+                x: 0,
+                y: 0,
+                width: UIScreen.main.bounds.width,
+                height: UIScreen.main.bounds.height))
         setup()
     }
-    
+
     /**
      This method is not supported
      */
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: Public
-    
+
     /**
      Setup the showcase for a view
-     
+
      - parameter view:    The view to be highlighted
      */
     open func setupShowcaseForView(_ view: UIView) {
         targetView = view
         setupShowcaseForLocation(view.convert(view.bounds, to: containerView))
     }
-    
+
     /**
      Setup showcase for the item at 1st position (0th index) of the table
-     
+
      - parameter tableView: Table whose item is to be highlighted
      */
     open func setupShowcaseForTableView(_ tableView: UITableView) {
         setupShowcaseForTableView(tableView, withIndexOfItem: 0, andSectionOfItem: 0)
     }
-    
+
     /**
      Setup showcase for the item at the given indexpath
-     
+
      - parameter tableView: Table whose item is to be highlighted
      - parameter indexPath: IndexPath of the item to be highlighted
      */
     open func setupShowcaseForTableView(_ tableView: UITableView,
                                         withIndexPath indexPath: IndexPath) {
         setupShowcaseForTableView(tableView,
-                                  withIndexOfItem: (indexPath as NSIndexPath).row,
-                                  andSectionOfItem: (indexPath as NSIndexPath).section)
+                withIndexOfItem: (indexPath as NSIndexPath).row,
+                andSectionOfItem: (indexPath as NSIndexPath).section)
     }
-    
+
     /**
      Setup showcase for the item at the given index in the given section of the table
-     
+
      - parameter tableView: Table whose item is to be highlighted
      - parameter row:       Index of the item to be highlighted
      - parameter section:   Section of the item to be highlighted
@@ -163,50 +165,50 @@ import Foundation
         let indexPath = IndexPath(row: row, section: section)
         targetView = tableView.cellForRow(at: indexPath)
         setupShowcaseForLocation(tableView.convert(
-            tableView.rectForRow(at: indexPath),
-            to: containerView))
+                tableView.rectForRow(at: indexPath),
+                to: containerView))
     }
-    
+
     /**
      Setup showcase for the Bar Button in the Navigation Bar
-     
+
      - parameter barItem: Bar button to be highlighted
      */
     open func setupShowcaseForBarItem(_ barItem: UIBarItem) {
         setupShowcaseForView(barItem.value(forKey: "view") as! UIView)
     }
-    
+
     /**
      Setup showcase to highlight a particular location on the screen
-     
+
      - parameter location: Location to be highlighted
      */
     open func setupShowcaseForLocation(_ location: CGRect) {
         showcaseRect = location
     }
-    
+
     /**
      Display the iShowcase
      */
     open func show() {
         if singleShotId != -1
-            && UserDefaults.standard.bool(forKey: String(
+                   && UserDefaults.standard.bool(forKey: String(
                 format: "iShowcase-%ld", singleShotId)) {
             return
         }
-        
+
         self.alpha = 1
         for view in containerView.subviews {
             view.isUserInteractionEnabled = false
         }
-        
+
         UIView.transition(
-            with: containerView,
-            duration: 0.5,
-            options: UIViewAnimationOptions.transitionCrossDissolve,
-            animations: { () -> Void in
-                self.containerView.addSubview(self)
-        }) { (_) -> Void in
+                with: containerView,
+                duration: 0.5,
+                options: UIViewAnimationOptions.transitionCrossDissolve,
+                animations: { () -> Void in
+                    self.containerView.addSubview(self)
+                }) { (_) -> Void in
             if let delegate = self.delegate {
                 if delegate.responds(to: #selector(iShowcaseDelegate.iShowcaseShown)) {
                     delegate.iShowcaseShown!(self)
@@ -243,12 +245,13 @@ import Foundation
 
         addSubview(showcaseImageView)
         addSubview(textContainer)
-        addSubview(button)
+        addSubview(endButton)
+        addSubview(noHelp)
         addGestureRecognizer(gestureRecognizer)
     }
-    
+
     // MARK: Private
-    
+
     fileprivate func setup() {
         self.backgroundColor = UIColor.clear
         containerView = UIApplication.shared.delegate!.window!
@@ -265,43 +268,43 @@ import Foundation
         textContainer = nib.instantiate(withOwner: nil)[0] as! UIView
         titleLabel = textContainer.subviews[0] as! UILabel
         detailsLabel = textContainer.subviews[1] as! UILabel
-        
-        // Setup button defaults
-        button = UIButton()
 
+        // Setup button defaults
+        endButton = UIButton()
+        noHelp = UIButton()
     }
-    
+
     fileprivate func updateBackground() {
         UIGraphicsBeginImageContextWithOptions(UIScreen.main.bounds.size,
-                                               false, UIScreen.main.scale)
+                false, UIScreen.main.scale)
         var context: CGContext? = UIGraphicsGetCurrentContext()
         context?.setFillColor(coverColor.cgColor)
         context?.fill(containerView.bounds)
-        
+
         if type == .rectangle {
             if let showcaseRect = showcaseRect {
-                
+
                 // Outer highlight
                 let highlightRect = CGRect(
-                    x: showcaseRect.origin.x - 15,
-                    y: showcaseRect.origin.y - 15,
-                    width: showcaseRect.size.width + 30,
-                    height: showcaseRect.size.height + 30)
-                
+                        x: showcaseRect.origin.x - 15,
+                        y: showcaseRect.origin.y - 15,
+                        width: showcaseRect.size.width + 30,
+                        height: showcaseRect.size.height + 30)
+
                 context?.setShadow(offset: CGSize.zero, blur: 30, color: highlightColor.cgColor)
                 context?.setFillColor(coverColor.cgColor)
                 context?.setStrokeColor(highlightColor.cgColor)
                 context?.addPath(UIBezierPath(rect: highlightRect).cgPath)
                 context?.drawPath(using: .fillStroke)
-                
+
                 // Inner highlight
                 context?.setLineWidth(3)
                 context?.addPath(UIBezierPath(rect: showcaseRect).cgPath)
                 context?.drawPath(using: .fillStroke)
-                
+
                 let showcase = UIGraphicsGetImageFromCurrentImageContext()
                 UIGraphicsEndImageContext()
-                
+
                 // Clear region
                 UIGraphicsBeginImageContext((showcase?.size)!)
                 showcase?.draw(at: CGPoint.zero)
@@ -311,9 +314,9 @@ import Foundation
         } else {
             if let showcaseRect = showcaseRect {
                 let center = CGPoint(
-                    x: showcaseRect.origin.x + showcaseRect.size.width / 2.0,
-                    y: showcaseRect.origin.y + showcaseRect.size.height / 2.0)
-                
+                        x: showcaseRect.origin.x + showcaseRect.size.width / 2.0,
+                        y: showcaseRect.origin.y + showcaseRect.size.height / 2.0)
+
                 // Draw highlight
                 context?.setLineWidth(2.54)
                 context?.setShadow(offset: CGSize.zero, blur: 30, color: highlightColor.cgColor)
@@ -323,7 +326,7 @@ import Foundation
                 context?.drawPath(using: .fillStroke)
                 context?.addArc(center: center, radius: CGFloat(radius), startAngle: 0, endAngle: CGFloat(2 * M_PI), clockwise: false)
                 context?.drawPath(using: .fillStroke)
-                
+
                 // Clear circle
                 context?.setFillColor(UIColor.clear.cgColor)
                 context?.setBlendMode(.clear)
@@ -336,23 +339,23 @@ import Foundation
         showcaseImageView.alpha = coverAlpha
         UIGraphicsEndImageContext()
     }
-    
+
     fileprivate func updateRegion() {
         if let showcaseRect = showcaseRect {
             let left = showcaseRect.origin.x,
-            right = showcaseRect.origin.x + showcaseRect.size.width,
-            top = showcaseRect.origin.y,
-            bottom = showcaseRect.origin.y + showcaseRect.size.height
-            
+                    right = showcaseRect.origin.x + showcaseRect.size.width,
+                    top = showcaseRect.origin.y,
+                    bottom = showcaseRect.origin.y + showcaseRect.size.height
+
             let areas = [
-                top * UIScreen.main.bounds.size.width, // Top region
-                left * UIScreen.main.bounds.size.height, // Left region
-                (UIScreen.main.bounds.size.height - bottom)
-                    * UIScreen.main.bounds.size.width, // Bottom region
-                (UIScreen.main.bounds.size.width - right)
-                    - UIScreen.main.bounds.size.height // Right region
+                    top * UIScreen.main.bounds.size.width, // Top region
+                    left * UIScreen.main.bounds.size.height, // Left region
+                    (UIScreen.main.bounds.size.height - bottom)
+                            * UIScreen.main.bounds.size.width, // Bottom region
+                    (UIScreen.main.bounds.size.width - right)
+                            - UIScreen.main.bounds.size.height // Right region
             ]
-            
+
             var largestIndex = 0
             for i in 0..<areas.count {
                 if areas[i] > areas[largestIndex] {
@@ -362,7 +365,7 @@ import Foundation
             region = REGION.regionFromInt(largestIndex)
         }
     }
-    
+
     fileprivate func updateTextContainer() {
 
         switch region {
@@ -405,28 +408,38 @@ import Foundation
             )
         }
     }
-    
+
     fileprivate func updateButton() {
-        button.setTitleColor(highlightColor, for: .normal)
-        button.frame = containerView.frame
-        button.sizeToFit()
-        button.frame = CGRect(
-            x: containerView.frame.width - 8 - button.frame.width,
-            y: containerView.frame.height - 8 - button.frame.height,
-            width: button.frame.width,
-            height: button.frame.height
+        endButton.setTitleColor(highlightColor, for: .normal)
+        endButton.frame = containerView.frame
+        endButton.sizeToFit()
+        endButton.frame = CGRect(
+                x: containerView.frame.width - 8 - endButton.frame.width,
+                y: containerView.frame.height - 8 - endButton.frame.height,
+                width: endButton.frame.width,
+                height: endButton.frame.height
         )
-        button.sizeToFit()
-        
+        endButton.sizeToFit()
+
+        noHelp.setTitleColor(highlightColor, for: .normal)
+        noHelp.frame = containerView.frame
+        noHelp.sizeToFit()
+        noHelp.frame = CGRect(
+                x: containerView.frame.width - 8 - noHelp.frame.width,
+                y: containerView.frame.height - 8 - noHelp.frame.height - 8 - endButton.frame.height,
+                width: noHelp.frame.width,
+                height: noHelp.frame.height
+        )
+        noHelp.sizeToFit()
     }
-    
+
     fileprivate func getGestureRecgonizer() -> UIGestureRecognizer {
         let singleTap = UITapGestureRecognizer(target: self, action: #selector(showcaseTapped))
         singleTap.numberOfTapsRequired = 1
         singleTap.numberOfTouchesRequired = 1
         return singleTap
     }
-    
+
     internal func showcaseTapped(_ gestureRecognizer: UIGestureRecognizer) {
         if !hideOnTouchOutside && showcaseRect != nil {
             //only dismiss if touch is inside spot area
@@ -437,22 +450,22 @@ import Foundation
         }
         hide(false)
     }
-    
+
     open func hide(_ programmatically: Bool) {
         UIView.animate(
-            withDuration: 0.5,
-            animations: {
-                self.alpha = 0
-            }, completion: { _ in
-                self.onAnimationComplete(programmatically)
-            }
+                withDuration: 0.5,
+                animations: {
+                    self.alpha = 0
+                }, completion: { _ in
+            self.onAnimationComplete(programmatically)
+        }
         )
     }
-    
+
     fileprivate func onAnimationComplete(_ programmatically: Bool) {
         if singleShotId != -1 {
             UserDefaults.standard.set(true, forKey: String(
-                format: "iShowcase-%ld", singleShotId))
+                    format: "iShowcase-%ld", singleShotId))
         }
         for view in self.containerView.subviews {
             view.isUserInteractionEnabled = true
@@ -465,12 +478,13 @@ import Foundation
             }
         }
     }
-    
+
     fileprivate func recycleViews() {
         showcaseImageView.removeFromSuperview()
         textContainer.removeFromSuperview()
-        button.removeFromSuperview()
+        endButton.removeFromSuperview()
+        noHelp.removeFromSuperview()
         removeGestureRecognizer(gestureRecognizer)
     }
-    
+
 }
